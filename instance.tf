@@ -204,7 +204,7 @@ locals {
   vsphere_password = yamldecode(data.terraform_remote_state.global.outputs.vsphere_password)
   vsphere_server = yamldecode(data.terraform_remote_state.global.outputs.vsphere_server)
   #root_password = yamldecode(data.terraform_remote_state.global.outputs.root_password)
-  roo_password = var.root_password
+  root_password = var.root_password
   datacenter = yamldecode(data.terraform_remote_state.global.outputs.datacenter)
   datastore_name = yamldecode(data.terraform_remote_state.global.outputs.datastore_name)
   resource_pool = yamldecode(data.terraform_remote_state.global.outputs.resource_pool)
