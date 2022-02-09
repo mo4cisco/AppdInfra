@@ -41,9 +41,6 @@ variable "dbvmwsname" {
   type = string
 }
 
-variable "root_password" {
-  type = string
-}
 
 data "vsphere_datacenter" "dc" {
   name = local.datacenter
@@ -136,7 +133,7 @@ resource "null_resource" "vm_node_init" {
     connection {
       type = "ssh"
       host = "${vsphere_virtual_machine.vm_deploy[count.index].default_ip_address}"
-      user = "auslab"
+      user = "root"
       password = "${local.root_password}"
       port = "22"
       agent = false
@@ -145,17 +142,17 @@ resource "null_resource" "vm_node_init" {
 
   provisioner "remote-exec" {
     inline = [
-	"sudo groupadd cisco",
-        "sudo  useradd -g cisco cisco",
-	"sudo chmod +x /tmp/appd.sh",
-        "sudo /tmp/appd.sh",
-	"sudo chmod +x /tmp/tom.sh",
-        "sudo /tmp/tom.sh",
+	"groupadd cisco",
+        "useradd -g cisco cisco",
+	"chmod +x /tmp/appd.sh",
+        "/tmp/appd.sh",
+	"chmod +x /tmp/tom.sh",
+        "/tmp/tom.sh",
     ]
     connection {
       type = "ssh"
       host = "${vsphere_virtual_machine.vm_deploy[count.index].default_ip_address}"
-      user = "auslab"
+      user = "root"
       password = "${local.root_password}"
       port = "22"
       agent = false
@@ -168,7 +165,7 @@ resource "null_resource" "vm_node_init" {
     connection {
       type = "ssh"
       host = "${local.dbvmip}"
-      user = "auslab"
+      user = "root"
       password = "${local.root_password}"
       port = "22"
       agent = false
@@ -177,13 +174,13 @@ resource "null_resource" "vm_node_init" {
 
   provisioner "remote-exec" {
     inline = [
-        "sudo chmod +x /tmp/grant.sh",
-        "sudo /tmp/grant.sh ${vsphere_virtual_machine.vm_deploy[count.index].default_ip_address} ${local.dbvmip} teadb teauser teapassword",
+        "chmod +x /tmp/grant.sh",
+        "/tmp/grant.sh ${vsphere_virtual_machine.vm_deploy[count.index].default_ip_address} ${local.dbvmip} teadb teauser teapassword",
     ]
     connection {
       type = "ssh"
       host = "${local.dbvmip}"
-      user = "auslab"
+      user = "root"
       password = "${local.root_password}"
       port = "22"
       agent = false
@@ -205,8 +202,7 @@ locals {
   vsphere_user = yamldecode(data.terraform_remote_state.global.outputs.vsphere_user)
   vsphere_password = yamldecode(data.terraform_remote_state.global.outputs.vsphere_password)
   vsphere_server = yamldecode(data.terraform_remote_state.global.outputs.vsphere_server)
-  #root_password = yamldecode(data.terraform_remote_state.global.outputs.root_password)
-  root_password = var.root_password
+  root_password = yamldecode(data.terraform_remote_state.global.outputs.root_password)
   datacenter = yamldecode(data.terraform_remote_state.global.outputs.datacenter)
   datastore_name = yamldecode(data.terraform_remote_state.global.outputs.datastore_name)
   resource_pool = yamldecode(data.terraform_remote_state.global.outputs.resource_pool)
