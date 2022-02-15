@@ -142,6 +142,8 @@ resource "null_resource" "vm_node_init" {
 
   provisioner "remote-exec" {
     inline = [
+	"groupadd cisco",
+        "useradd -g cisco cisco",
 	"chmod +x /tmp/appd.sh",
         "/tmp/appd.sh",
 	"chmod +x /tmp/tom.sh",
